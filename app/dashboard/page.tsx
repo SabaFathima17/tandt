@@ -5,13 +5,22 @@ import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth'
 
+interface User {
+  id: string
+  email?: string
+  user_metadata: {
+    full_name?: string
+    avatar_url?: string
+  }
+}
+
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const router = useRouter()
 
   useEffect(() => {
@@ -21,9 +30,8 @@ export default function DashboardPage() {
         router.push('/login')
         return
       }
-      setUser(session.user)
+      setUser(session.user as User)
 
-      // Insert user into users table on first login
       await supabase.from('users').upsert({
         id: session.user.id,
         email: session.user.email,
@@ -34,6 +42,7 @@ export default function DashboardPage() {
       setLoading(false)
     }
     getUser()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (loading) {
@@ -53,6 +62,7 @@ export default function DashboardPage() {
           {user?.user_metadata?.avatar_url && (
             <img
               src={user.user_metadata.avatar_url}
+              alt="Profile"
               className="w-8 h-8 rounded-full"
             />
           )}
@@ -80,12 +90,11 @@ export default function DashboardPage() {
           Start New Project
         </button>
 
-        {/* Projects section */}
         <div className="mt-16">
           <h3 className="text-xl font-semibold mb-6">My Projects</h3>
           <div className="border border-gray-800 rounded-lg p-12 text-center">
-            <p className="text-gray-400 text-lg">You haven't built anything yet.</p>
-            <p className="text-gray-500 mt-2">Let's fix that.</p>
+            <p className="text-gray-400 text-lg">You haven&apos;t built anything yet.</p>
+            <p className="text-gray-500 mt-2">Let&apos;s fix that.</p>
           </div>
         </div>
       </main>
