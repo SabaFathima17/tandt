@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
-import { signOut } from '@/lib/auth'
+import Navbar from '@/components/Navbar'
 
 interface User {
   id: string
@@ -55,28 +55,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">
-      {/* Navbar */}
-      <nav className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">Train & Test</h1>
-        <div className="flex items-center gap-4">
-          {user?.user_metadata?.avatar_url && (
-            <img
-              src={user.user_metadata.avatar_url}
-              alt="Profile"
-              className="w-8 h-8 rounded-full"
-            />
-          )}
-          <span className="text-gray-300 text-sm">{user?.user_metadata?.full_name}</span>
-          <button
-            onClick={signOut}
-            className="text-gray-400 hover:text-white text-sm transition"
-          >
-            Sign out
-          </button>
-        </div>
-      </nav>
+      <Navbar
+        userName={user?.user_metadata?.full_name}
+        avatarUrl={user?.user_metadata?.avatar_url}
+      />
 
-      {/* Main content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
         <h2 className="text-3xl font-bold mb-2">
           Hi {user?.user_metadata?.full_name?.split(' ')[0]}, ready to build something real today?
